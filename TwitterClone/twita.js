@@ -58,8 +58,10 @@ myApp.get = function (url) {
     request.onload = function () {
         if (this.status >= 200 && this.status < 400) {
             console.log();
+            myApp.tweets = [];
             var tweets = JSON.parse(this.response);
             for (var i in tweets) {
+                tweets[i].key = i;
                 myApp.tweets.push(tweets[i]);
                 //we gonna need i for edit and delete 
             } myApp.writeTable(myApp.tweets);
@@ -86,11 +88,39 @@ myApp.writeTable = function (array) {
         holder += "name:" + array[i].userName;
         holder += "tweet:" + array[i].text;
         holder += "timeStamp" + array[i].time;
+        holder += "<span class = \"btn btn-danger fa fa-trash-o\" onclick = \"myApp.delete('"+ array[i].key +"', 'tweets/')\"></span>"; //backslash = escape character
         holder += "</div>";
         document.getElementById("displayTweets").innerHTML += holder;
     }
-
-
-
 }
+myApp.delete = function (key, url) {
+    var request = new XMLHttpRequest();
+    if (!url) {
+        alert("Please input the valid url");
+        return undefined;
+    }
+    else {
+        request.open("DELETE", myApp.url + url + key + "/.json", true);
+    }
+    request.onload = function () {
+        if (this.status >= 200 && this.status < 400) {
+            console.log();
+            for (var i in myApp.tweets) {
+                if (myApp.tweets[i].key === key) {
+                    myApp.tweets.splice(i, 1);
+                }
 
+            }
+            myApp.writeTable(myApp.tweets);
+        }
+        else {
+            console.log(this.response);
+        }
+    }
+
+    request.onerror = function () {
+        console.log("ERRRRRRRR");
+    }
+    request.send();
+}
+myApp.get("tweets/");

@@ -1,4 +1,5 @@
-﻿var myApp = {};
+﻿/// <reference path="index.html" />
+var myApp = {};
 myApp.url = "https://twita.firebaseio.com/";
 
 myApp.profile = function (name, pic, bio) {
@@ -16,16 +17,22 @@ myApp.message = function (userName, text) {
 myApp.createMessage = function () {
     var messageText = document.getElementById("text").value;
     var message = new myApp.message(myApp.userName, messageText);
-    myApp.postMessage(message);
+    myApp.post(message, "tweets/");
     alert(JSON.stringify(message) + " " + messageText);
 }
 
-myApp.postMessage = function (data) {
+myApp.post = function (data, url) {
     var request = new XMLHttpRequest();
-    request.open("Post", myApp.url+".json", true);
+    if (!url) {
+        request.open("Post", myApp.url + ".json", true);
+    }
+    else {
+        request.open("Post", myApp.url + url + ".json", true);
+    }
     request.onload = function () {
         if (this.status >= 200 && this.status < 400) {
             console.log();
+            myApp.get(url);
         } else {
             console.log(this.response);
         }
@@ -36,6 +43,40 @@ myApp.postMessage = function (data) {
     }
     request.send(JSON.stringify(data));
 }
+
+myApp.get = function (url) {
+
+    var request = new XMLHttpRequest();
+    if (!url) {
+        request.open("GET", myApp.url + ".json", true);
+        alert("Please input the valid url");
+        return undefined;
+    }
+    else {
+        request.open("GET", myApp.url + url + ".json", true);
+    }
+    request.onload = function () {
+        if (this.status >= 200 && this.status < 400) {
+            console.log();
+            var tweets = JSON.parse(this.response);
+            for (var i in tweets) {
+                myApp.tweets.push(tweets[i]);
+            //we gonna need i for edit and delete 
+
+            }
+        } else {
+            console.log(this.response);
+        }
+    }
+
+    request.onerror = function () {
+        console.log("ERRRRRRRR");
+    }
+    request.send();
+
+}
+
+myApp.tweets = [];
 
 
 myApp.userName = "Donald";

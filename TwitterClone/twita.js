@@ -61,9 +61,8 @@ myApp.get = function (url) {
             var tweets = JSON.parse(this.response);
             for (var i in tweets) {
                 myApp.tweets.push(tweets[i]);
-            //we gonna need i for edit and delete 
-
-            }
+                //we gonna need i for edit and delete 
+            } myApp.writeTable(myApp.tweets);
         } else {
             console.log(this.response);
         }
@@ -80,3 +79,18 @@ myApp.tweets = [];
 
 
 myApp.userName = "Donald";
+myApp.writeTable = function (array) {
+    document.getElementById("displayTweets").innerHTML = "";
+    for (var i in array) {
+        var holder = "<div>";
+        holder += "name:" + array[i].userName;
+        holder += "tweet:" + array[i].text;
+        holder += "timeStamp" + array[i].time;
+        holder += "</div>";
+        document.getElementById("displayTweets").innerHTML += holder;
+    }
+
+
+
+}
+
